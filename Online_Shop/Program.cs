@@ -32,14 +32,14 @@ namespace Online_Shop
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
-                    {
-                        options.TokenValidationParameters = new TokenValidationParameters {
+                 {
+                     options.TokenValidationParameters = new TokenValidationParameters {
                         ValidateIssuerSigningKey = true,
-                         IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8
-                        .GetBytes(builder.Configuration.GetSection("Jwt:Token").Value)),
+                        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8
+                           .GetBytes(builder.Configuration.GetSection("Jwt:Token").Value)),
                         ValidateIssuer = false,
                         ValidateAudience = false
-                };
+                 };
             });
 
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -47,6 +47,14 @@ namespace Online_Shop
             builder.Services.AddAutoMapper(typeof(Program).Assembly);
             builder.Services.AddScoped<IProductRepository,ProductRepository>();
             builder.Services.AddScoped<IAuthService,AuthService>();
+
+            builder.Services.AddCors(option =>
+            {
+                option.AddDefaultPolicy(builder =>
+                {
+                    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                });
+            });
 
             var app = builder.Build();
 
@@ -58,6 +66,8 @@ namespace Online_Shop
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors();
 
             app.UseAuthentication();
 
